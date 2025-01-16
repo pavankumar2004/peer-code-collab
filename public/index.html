@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>P2P Code Collaboration</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/monokai.min.css" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; }
+        .container { display: flex; height: 100vh; }
+        .sidebar { 
+            width: 250px; 
+            padding: 20px; 
+            background: #2c3e50; 
+            color: white;
+        }
+        .main-content { 
+            flex-grow: 1; 
+            display: flex; 
+            flex-direction: column; 
+        }
+        .editor-container { 
+            flex-grow: 1; 
+            position: relative;
+        }
+        .CodeMirror { 
+            height: 100%; 
+            font-size: 14px;
+        }
+        .controls { 
+            padding: 15px; 
+            background: #34495e; 
+            color: white;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .room-list { 
+            margin-bottom: 20px; 
+        }
+        .peer-list { 
+            margin-top: 20px; 
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .status.connected {
+            background: #27ae60;
+        }
+        .status.disconnected {
+            background: #c0392b;
+        }
+        button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            background: #3498db;
+            color: white;
+            cursor: pointer;
+            margin: 5px 0;
+        }
+        button:hover {
+            background: #2980b9;
+        }
+        input[type="text"] {
+            padding: 8px;
+            border: 1px solid #bdc3c7;
+            border-radius: 4px;
+            width: 100%;
+            margin: 5px 0;
+        }
+        .peer-item {
+            padding: 5px;
+            margin: 5px 0;
+            background: #34495e;
+            border-radius: 4px;
+        }
+        #connectionStatus {
+            margin-left: auto;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <h2>Code Collaboration</h2>
+            <div id="status" class="status disconnected">Disconnected</div>
+            
+            <div class="room-list">
+                <h3>Room</h3>
+                <input type="text" id="roomInput" placeholder="Enter room name">
+                <button onclick="createRoom()">Create Room</button>
+                <button onclick="joinRoom()">Join Room</button>
+            </div>
+            
+            <div class="peer-list">
+                <h3>Connected Peers</h3>
+                <ul id="peerList"></ul>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div class="editor-container">
+                <textarea id="codeEditor"></textarea>
+            </div>
+            
+            <div class="controls">
+                <button id="voiceButton" onclick="toggleVoice()">Start Voice</button>
+                <span id="roomId"></span>
+                <div id="connectionStatus">Not Connected</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.4.7/peerjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/javascript/javascript.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
