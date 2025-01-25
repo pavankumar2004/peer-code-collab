@@ -4,6 +4,7 @@ let editor;
 let currentRoom = null;
 let localStream = null;
 let isVoiceActive = false;
+let isVideoActive = false;
 
 // Initialize the application
 async function init() {
@@ -227,21 +228,48 @@ function updatePeerList() {
 function handleIncomingCall(call) {
     if (localStream) {
         call.answer(localStream);
-        setupVoiceCall(call);
+        setupVideoCall(call);
     } else {
-        // If we receive a call but don't have local stream yet, get it first
-        navigator.mediaDevices.getUserMedia({ audio: true })
+        navigator.mediaDevices.getUserMedia({ video: true, audio: true })
             .then(stream => {
                 localStream = stream;
                 call.answer(localStream);
-                setupVoiceCall(call);
-                isVoiceActive = true;
-                document.getElementById('voiceButton').textContent = 'Stop Voice';
+                setupVideoCall(call);
+                isVideoActive = true;
+                document.getElementById('videoButton').textContent = 'Stop Video';
             })
             .catch(error => {
-                console.error('Error accessing microphone:', error);
-                updateConnectionStatus('Microphone access denied', false);
+                console.error('Error accessing camera/microphone:', error);
+                updateConnectionStatus('Camera access denied', false);
             });
+    }
+}
+// Handle video chat toggling
+async function toggleVideo() {
+    const videoButton = document.getElementById('videoButton');
+    
+    if (!isVideoActive) {
+        try {
+            localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+            connections.forEach((_, peerId) => {
+                const call = peer.call(peerId, localStream);
+                setupVideoCall(call);
+            });
+            videoButton.textContent = 'Stop Video';
+            isVideoActive = true;
+            updateConnectionStatus('Video chat active', true);
+        } catch (err) {
+            console.error('Error accessing camera/microphone:', err);
+            updateConnectionStatus('Camera access denied', false);
+        }
+    } else {
+        if (localStream) {
+            localStream.getTracks().forEach(track => track.stop());
+            localStream = null;
+        }
+        videoButton.textContent = 'Start Video';
+        isVideoActive = false;
+        updateConnectionStatus('Video chat stopped', true);
     }
 }
 
@@ -291,6 +319,27 @@ function setupVoiceCall(call) {
 
     call.on('close', () => {
         console.log('Voice call ended');
+    });
+}
+
+// Set up video call handling
+
+function setupVideoCall(call) {
+    call.on('stream', remoteStream => {
+        const videoElement = document.getElementById('remoteVideo');
+        videoElement.srcObject = remoteStream;
+        videoElement.play().catch(error => {
+            console.error('Error playing video:', error);
+        });
+    });
+
+    call.on('error', error => {
+        console.error('Video call error:', error);
+        updateConnectionStatus('Video call error', false);
+    });
+
+    call.on('close', () => {
+        console.log('Video call ended');
     });
 }
 
