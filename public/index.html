@@ -83,6 +83,23 @@
             border-radius: 4px;
             font-size: 14px;
         }
+        .video-container {
+        display: flex;
+        gap: 10px;
+        background: #34495e;
+        padding: 10px;
+        justify-content: center;
+        align-items: center;
+    }
+
+    video {
+        width: 300px;
+        height: 200px;
+        background: black;
+        border: 2px solid #2ecc71;
+        border-radius: 5px;
+    }
+
     </style>
 </head>
 <body>
@@ -115,6 +132,17 @@
                 <div id="connectionStatus">Not Connected</div>
             </div>
         </div>
+
+        <div class="controls">
+            <button id="videoButton" onclick="toggleVideo()">Start Video</button>
+            <button id="voiceButton" onclick="toggleVoice()">Start Voice</button>
+        </div>
+        <div class="video-container">
+            <video id="localVideo" autoplay muted></video>
+            <video id="remoteVideo" autoplay></video>
+        </div>
+        
+
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.4.7/peerjs.min.js"></script>
